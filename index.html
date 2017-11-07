@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Golden State Warriors</title>
+    <!-- Added link to the jQuery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Added a link to Bootstrap-->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+
+    <link rel="stylesheet" href=assets/css/style.css>
+</head>
+
+<body>
+    <div class="main-container">
+        <h3 id="gif-buttons"></h3>
+        <h3 id="gif-output"></h3>
+        <div class="row">
+            <!-- /.col-lg-6 -->
+            <div class="col-lg-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search for...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">Go!</button>
+                    </span>
+                </div>
+                <!-- /input-group -->
+            </div>
+            <!-- /.col-lg-6 -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <script>
+        var topics = ["stephen curry", "kevin durant", "draymond green", "klay thompson", "golden state warriors", "steve kerr", "andre iguodala", "jordan bell", "bob myers", "joe lacob", "jason richardson", "monta ellis", "kent bazemore"];
+
+        // Creating a loop to add a button throughout every string in the array
+        // Also adding classes/attributes and appending the results
+        for (i = 0; i < topics.length; i++) {
+            var newButton = $("<button>");
+            newButton.addClass("topic");
+            newButton.attr("data-name", topics[i]);
+            newButton.text(topics[i]);
+            $("#gif-buttons").append(newButton);
+        }
+
+        // Creating an on click function that displays 10 static gif images from the giphy API and places them on the page
+        // API Key = ir7amVwfBX9iZpdiy9HyKYwXqThkjbs6
+        $("#gif-buttons").on("click", function () {
+            var warriorsTopic = $(this).data("warriorsTopic");
+            var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + warriorsTopic + "&api_key=ir7amVwfBX9iZpdiy9HyKYwXqThkjbs6" + "&limit=10";
+
+            // Performing our AJAX GET request
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            })
+
+                // After the data from the AJAX request comes back
+                .done(function (response) {
+
+                    // Storing an array of results in the results variable
+                    var results = response.data;
+
+                    // Looping over every result item
+                    for (var i = 0; i < results.length; i++) {
+
+                        // Only taking action if the photo has an appropriate rating
+                        if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+                            // Creating a div with the class "item"
+                            var gifDiv = $("<div class='item'>");
+
+                            // Storing the result item's rating
+                            var rating = results[i].rating;
+
+                            // Creating a paragraph tag with the result item's rating
+                            var p = $("<p>").text("Rating: " + rating);
+
+                            // Creating an image tag
+                            var warriorImage = $("<img>");
+
+                            // Giving the image tag an src attribute of a proprty pulled off the
+                            // result item
+                            warriorImage.attr("src", results[i].images.fixed_height.url);
+
+                            // Appending the paragraph and warriorImage we created to the "gifDiv" div we created
+                            gifDiv.append(p);
+                            gifDiv.append(warriorImage);
+
+                            // Prepending the gifDiv to the "#gifs-appear-here" div in the HTML
+                            $("#gif-output").prepend(gifDiv);
+
+                        }
+                    }
+                });
+        });
+
+
+
+
+                    /*
+                    // Saving the image_original_url property
+                    var imageUrl = response.data.image_original_url;
+
+                    // Creating and storing an image tag
+                    var warriorImage = $("<img>");
+
+                    // Setting the warriorImage src attribute to imageUrl
+                    warriorImage.attr("src", imageUrl);
+                    warriorImage.attr("alt", "warrior image");
+
+                    // Prepending the warriorImage to the gif-output ID
+                    $("#gif-output").prepend(warriorImage);
+                })
+        })
+                    */
+    </script>
+</body>
+
+</html>
